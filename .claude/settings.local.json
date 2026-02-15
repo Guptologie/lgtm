@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm install:*)",
+      "Bash(pnpm approve-builds:*)",
+      "Bash(pnpm build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm --filter @lgtm/ui typecheck:*)",
+      "Bash(pnpm typecheck:*)",
+      "Bash(pnpm dev)",
+      "Bash(open:*)",
+      "Bash(gh auth:*)"
+    ]
+  }
+}
