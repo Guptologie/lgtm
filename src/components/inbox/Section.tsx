@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, type CSSProperties } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import type { SectionConfig } from '../../query/model';
@@ -28,6 +28,18 @@ export function Section({ section }: { section: SectionConfig }) {
     useSortable({ id: section.id });
   const cards = useLgtmStore((s) => s.cards[section.id]);
   const refreshCards = useLgtmStore((s) => s.refreshCards);
+  const focused = useLgtmStore((s) => s.ui.focusedSectionId === section.id);
+
+  const nodeRef = useRef<HTMLElement | null>(null);
+  const setRefs = (el: HTMLElement | null) => {
+    setNodeRef(el);
+    nodeRef.current = el;
+  };
+
+  // Scroll into view when focused from the sidebar (cross-surface via the store).
+  useEffect(() => {
+    if (focused) nodeRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [focused]);
 
   const style: CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -46,7 +58,7 @@ export function Section({ section }: { section: SectionConfig }) {
   );
 
   return (
-    <section ref={setNodeRef} style={style}>
+    <section ref={setRefs} style={style}>
       <SectionHeader section={section} handle={handle} />
       {!section.collapsed && (
         <div>
