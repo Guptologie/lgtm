@@ -30,7 +30,8 @@
     "vitest": "^4.1.9"
   },
   "dependencies": {
-    "@ghpp/domain": "workspace:*"
+    "@ghpp/domain": "workspace:*",
+    "zustand": "^5.0.14"
   },
   "peerDependencies": {
     "react": ">=18",
