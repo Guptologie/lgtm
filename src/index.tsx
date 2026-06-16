@@ -8,20 +8,25 @@ import {
   type SlotId,
 } from '@ghpp/domain';
 import { LgtmRoot } from './app/LgtmRoot';
+import { createLgtmStore } from './store/store';
 
 /**
- * Activate lgtm against an injected services bag. Returns an ActiveLibrary that
- * mounts both the 'sidebar' and 'main' slots; state shared across slots will
- * live here (added with the store in a later commit).
+ * Activate lgtm against an injected services bag. A single store backs both the
+ * 'sidebar' and 'main' slots, so counts/layout stay in sync across surfaces.
  */
 export function createLgtm(services: HostServices): ActiveLibrary {
+  const { store, dispose: disposeStore } = createLgtmStore(services);
+  void store.getState().load();
+
   const roots = new Map<SlotId, Root>();
 
   return {
     slots: () => ['sidebar', 'main'],
     mount({ container, slot, shadowRoot }: MountContext) {
       const root = createRoot(container);
-      root.render(<LgtmRoot mountPoint={slot} services={services} shadowRoot={shadowRoot} />);
+      root.render(
+        <LgtmRoot mountPoint={slot} services={services} store={store} shadowRoot={shadowRoot} />,
+      );
       roots.set(slot, root);
     },
     unmount(slot) {
@@ -31,6 +36,7 @@ export function createLgtm(services: HostServices): ActiveLibrary {
     dispose() {
       for (const root of roots.values()) root.unmount();
       roots.clear();
+      disposeStore();
     },
   };
 }

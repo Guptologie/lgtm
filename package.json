@@ -31,6 +31,8 @@
   },
   "dependencies": {
     "@ghpp/domain": "workspace:*",
+    "@primer/primitives": "^11.9.0",
+    "@primer/react": "^38.28.0",
     "zustand": "^5.0.14"
   },
   "peerDependencies": {

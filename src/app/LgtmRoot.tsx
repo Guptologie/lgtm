@@ -1,17 +1,27 @@
 import type { HostServices, SlotId } from '@ghpp/domain';
+import type { LgtmStore } from '../store/store';
+import { LgtmProvider } from './context';
+import { ThemeBridge } from './providers/ThemeBridge';
+import { ShadowPortalProvider } from './providers/ShadowPortalProvider';
+import { SidebarApp } from './SidebarApp';
+import { InboxApp } from './InboxApp';
 
 export interface LgtmRootProps {
   mountPoint: SlotId;
   services: HostServices;
+  store: LgtmStore;
   shadowRoot: ShadowRoot;
 }
 
-// Minimal root; the provider stack, sidebar, and inbox are added in later
-// commits. Renders enough to confirm the library mounts into both slots.
-export function LgtmRoot({ mountPoint, services }: LgtmRootProps) {
+/** Provider stack shared by both surfaces; renders the surface for the slot. */
+export function LgtmRoot({ mountPoint, services, store, shadowRoot }: LgtmRootProps) {
   return (
-    <div style={{ font: '13px/1.5 system-ui, sans-serif', color: '#1f2328', padding: 8 }}>
-      LGTM · {String(mountPoint)} slot — auth: {services.auth.status}
-    </div>
+    <LgtmProvider value={{ services, store, shadowRoot }}>
+      <ThemeBridge>
+        <ShadowPortalProvider>
+          {mountPoint === 'sidebar' ? <SidebarApp /> : <InboxApp />}
+        </ShadowPortalProvider>
+      </ThemeBridge>
+    </LgtmProvider>
   );
 }
