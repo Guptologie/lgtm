@@ -1,6 +1,7 @@
 import { useLgtmStore } from './context';
 import { InboxToolbar } from '../components/inbox/InboxToolbar';
 import { SectionList } from '../components/inbox/SectionList';
+import { SectionEditorDrawer } from '../components/editor/SectionEditorDrawer';
 
 export function InboxApp() {
   const loaded = useLgtmStore((s) => s.loaded);
@@ -12,6 +13,7 @@ export function InboxApp() {
       ) : (
         <div style={{ padding: 16, fontSize: 13, color: 'var(--fgColor-muted, #656d76)' }}>Loading…</div>
       )}
+      <SectionEditorDrawer />
     </div>
   );
 }

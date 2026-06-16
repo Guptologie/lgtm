@@ -84,6 +84,9 @@ const github: GitHubClient = {
       const nodes = fixturesByQuery.get(String(variables.q)) ?? [];
       return { search: { issueCount: nodes.length, pageInfo: { hasNextPage: false, endCursor: null }, nodes } };
     }
+    if (query.includes('query Preview')) {
+      return { c: { issueCount: (fixturesByQuery.get(String(variables.q)) ?? []).length } };
+    }
     return {};
   }) as GitHubClient['graphql'],
   rest: (async () => ({ data: {} })) as GitHubClient['rest'],
