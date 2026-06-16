@@ -9,6 +9,7 @@ import {
 } from '@ghpp/domain';
 import { LgtmRoot } from './app/LgtmRoot';
 import { createLgtmStore } from './store/store';
+import { startPolling } from './data/poll-controller';
 
 /**
  * Activate lgtm against an injected services bag. A single store backs both the
@@ -16,6 +17,7 @@ import { createLgtmStore } from './store/store';
  */
 export function createLgtm(services: HostServices): ActiveLibrary {
   const { store, dispose: disposeStore } = createLgtmStore(services);
+  const stopPolling = startPolling(store);
   void store.getState().load();
 
   const roots = new Map<SlotId, Root>();
@@ -36,6 +38,7 @@ export function createLgtm(services: HostServices): ActiveLibrary {
     dispose() {
       for (const root of roots.values()) root.unmount();
       roots.clear();
+      stopPolling();
       disposeStore();
     },
   };

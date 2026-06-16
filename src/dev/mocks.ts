@@ -8,6 +8,7 @@ import {
   type StorageClient,
   type ThemeInfo,
 } from '@ghpp/domain';
+import { fixturesByQuery } from './fixtures';
 
 export interface MockThemeInfo extends ThemeInfo {
   /** Harness control to flip light/dark. */
@@ -69,7 +70,22 @@ const navigation: NavigationEvents = {
 };
 
 const github: GitHubClient = {
-  graphql: (async () => ({})) as GitHubClient['graphql'],
+  graphql: (async (query: string, variables: Record<string, unknown> = {}) => {
+    if (query.includes('query Counts')) {
+      const out: Record<string, { issueCount: number }> = {};
+      for (const key of Object.keys(variables)) {
+        if (!key.startsWith('q')) continue;
+        const q = String(variables[key]);
+        out[`s${key.slice(1)}`] = { issueCount: (fixturesByQuery.get(q) ?? []).length };
+      }
+      return out;
+    }
+    if (query.includes('query Cards')) {
+      const nodes = fixturesByQuery.get(String(variables.q)) ?? [];
+      return { search: { issueCount: nodes.length, pageInfo: { hasNextPage: false, endCursor: null }, nodes } };
+    }
+    return {};
+  }) as GitHubClient['graphql'],
   rest: (async () => ({ data: {} })) as GitHubClient['rest'],
   searchIssues: (async () => ({ data: { total_count: 0, items: [] } })) as GitHubClient['searchIssues'],
 };
